@@ -1,0 +1,4 @@
+sceneSetups:
+- path: Assets/jns.unity
+  isLoaded: 1
+  isActive: 1

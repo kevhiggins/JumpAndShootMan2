@@ -74,14 +74,14 @@ public class DemoScene : MonoBehaviour
 		if (_controller.isGrounded)
 			_velocity.y = 0;
 
-		if (Input.GetKey (KeyCode.RightArrow)) {
+		if (Input.GetAxisRaw("Horizontal") > 0f) {
 			normalizedHorizontalSpeed = 1;
 			if (transform.localScale.x < 0f)
 				transform.localScale = new Vector3 (-transform.localScale.x, transform.localScale.y, transform.localScale.z);
 
 			if (_controller.isGrounded)
 				_animator.Play (Animator.StringToHash ("Run"));
-		} else if (Input.GetKey (KeyCode.LeftArrow)) {
+		} else if (Input.GetAxisRaw("Horizontal") < 0f) {
 			normalizedHorizontalSpeed = -1;
 			if (transform.localScale.x > 0f)
 				transform.localScale = new Vector3 (-transform.localScale.x, transform.localScale.y, transform.localScale.z);
@@ -97,7 +97,7 @@ public class DemoScene : MonoBehaviour
 
 
 		// we can only jump whilst grounded
-		if (_controller.isGrounded && Input.GetKeyDown (KeyCode.UpArrow)) {
+		if (_controller.isGrounded && Input.GetButtonDown ("Jump")) {
 			_velocity.y = Mathf.Sqrt (2f * jumpHeight * -gravity);
 			_animator.Play (Animator.StringToHash ("Jump"));
 		}
@@ -118,7 +118,7 @@ public class DemoScene : MonoBehaviour
 			_controller.ignoreOneWayPlatformsThisFrame = true;
 		}
 
-		if (!Input.GetKey(KeyCode.UpArrow) && _velocity.y >= airBreakThreshold) 
+		if (!Input.GetButton("Jump") && _velocity.y >= airBreakThreshold) 
 		{
 			_velocity.y = airBreakSpeed;
 		}

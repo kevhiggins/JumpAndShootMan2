@@ -52,8 +52,10 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\CharacterController2D\CharacterController2D.cs" />
-     <Compile Include="Assets\demo\scripts\DemoScene.cs" />
-     <Compile Include="Assets\demo\scripts\SmoothFollow.cs" />
+     <Compile Include="Assets\CharacterController2D\demo\scripts\DemoScene.cs" />
+     <Compile Include="Assets\CharacterController2D\demo\scripts\SmoothFollow.cs" />
+     <Compile Include="Assets\Scripts\PlayerGun.cs" />
+     <Compile Include="Assets\Scripts\Projectile.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>E:/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

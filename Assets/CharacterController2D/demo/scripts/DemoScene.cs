@@ -8,8 +8,8 @@ public class DemoScene : MonoBehaviour
 {
 	// movement config
 	public float gravity = -25f;
-	public float airBreakThreshold = 6f;
-	public float airBreakSpeed = 3f;
+	public float airBreakThreshold = 6f; //when jump is released, air breaking will kick in if vspeed is higher than this
+	public float airBreakSpeed = 3f;	//when airbreak happens, vspeed is reduced to this
 	public float runSpeed = 8f;
 	public float groundDamping = 20f; // how fast do we change direction? higher means faster
 	public float inAirDamping = 5f;
@@ -74,14 +74,14 @@ public class DemoScene : MonoBehaviour
 		if (_controller.isGrounded)
 			_velocity.y = 0;
 
-		if (Input.GetAxisRaw("Horizontal") > 0f) {
+		if (Input.GetAxisRaw ("Horizontal") > 0f) {
 			normalizedHorizontalSpeed = 1;
 			if (transform.localScale.x < 0f)
 				transform.localScale = new Vector3 (-transform.localScale.x, transform.localScale.y, transform.localScale.z);
 
 			if (_controller.isGrounded)
 				_animator.Play (Animator.StringToHash ("Run"));
-		} else if (Input.GetAxisRaw("Horizontal") < 0f) {
+		} else if (Input.GetAxisRaw ("Horizontal") < 0f) {
 			normalizedHorizontalSpeed = -1;
 			if (transform.localScale.x > 0f)
 				transform.localScale = new Vector3 (-transform.localScale.x, transform.localScale.y, transform.localScale.z);
@@ -112,14 +112,12 @@ public class DemoScene : MonoBehaviour
 
 //		 if holding down bump up our movement amount and turn off one way platform detection for a frame.
 //		 this lets us jump down through one way platforms
-		if( _controller.isGrounded && Input.GetKey( KeyCode.DownArrow ) )
-		{
+		if (_controller.isGrounded && Input.GetKey (KeyCode.DownArrow)) {
 			_velocity.y *= 3f;
 			_controller.ignoreOneWayPlatformsThisFrame = true;
 		}
 
-		if (!Input.GetButton("Jump") && _velocity.y >= airBreakThreshold) 
-		{
+		if (!Input.GetButton ("Jump") && _velocity.y >= airBreakThreshold) {
 			_velocity.y = airBreakSpeed;
 		}
 

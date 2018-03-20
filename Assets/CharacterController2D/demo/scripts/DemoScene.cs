@@ -118,7 +118,7 @@ public class DemoScene : MonoBehaviour
 			_velocity.y = Mathf.Sqrt (2f * jumpHeight * -gravity);
 			_animator.Play (Animator.StringToHash ("Jump"));
 		}
-
+		//
 	    if (_dashTimeAccumulation.HasValue)
 	    {
 	        _dashTimeAccumulation += Time.deltaTime;
@@ -137,9 +137,9 @@ public class DemoScene : MonoBehaviour
 	        }
 	    }
 
-        if (Input.GetButtonDown("Air Dash") 
+        if (Input.GetButtonDown("Dash") 
             && _lastFrameWasAirDash == false 
-            //&& _hasAirDashedSinceJump == false
+            && _hasAirDashedSinceJump == false
             && !_timeSinceDashStart.HasValue)
 	    {
 	        _lastFrameWasAirDash = true;
@@ -148,6 +148,8 @@ public class DemoScene : MonoBehaviour
 	        _timeSinceDashStart = 0f;
             
 	        _dashTimeAccumulation = 0f;
+
+			_animator.Play (Animator.StringToHash ("Dash"));
 	    }
 	    else
 	    {
@@ -157,7 +159,8 @@ public class DemoScene : MonoBehaviour
 	    if (_isDashing)
 	    {
 	        var directionMultiplier = transform.localScale.x > 0 ? 1 : -1;
-            _velocity.x += directionMultiplier * dashSpeed;
+            _velocity.x = directionMultiplier * dashSpeed;
+            _velocity.y = 0f;
 	    }
 	    else
 	    {

@@ -23,18 +23,7 @@ public class DemoScene : MonoBehaviour
 	private RaycastHit2D _lastControllerColliderHit;
 	private Vector3 _velocity;
 
-    private bool _lastFrameWasAirDash = false;
-    private bool _isDashing = false;
-    private float? _dashTimeAccumulation;
-    private bool _hasAirDashedSinceJump = false;
-    private float? _timeSinceDashStart;
-
     private DashAbility _dashAbility;
-
-    //private bool _wasAirborne = false;
-
-    
-    
 
 	void Awake ()
 	{

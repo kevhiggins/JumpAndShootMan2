@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/jns.unity
+    path: Assets/Scenes/jns.unity
     guid: 02fa6640d2c65314baffa50b2855688d
   - enabled: 1
-    path: Assets/TestRoom2.unity
+    path: Assets/Scenes/TestRoom2.unity
     guid: 1830f0ccfd243c7498d2c97f56a424a3

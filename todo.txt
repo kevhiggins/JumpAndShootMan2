@@ -1,6 +1,8 @@
 x - Camera bounding box
 x - Fix jump timing not feeling right with when spamming jump. (No input buffering)
 
+Use timers for DashAbility
+
 Evaluate 2D Game Kit package
 
 Dog attack functionality

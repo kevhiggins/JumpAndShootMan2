@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using Prime31;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(CharacterController2D))]
 [RequireComponent(typeof(Animator))]
@@ -8,6 +10,7 @@ public class DashAbility : MonoBehaviour
     public float dashDuration = .25f;
     public float dashSpeed = 12f;
     public float dashCooldown = .5f;
+    public UnityEvent onStart = new UnityEvent();
 
     public bool IsDashing { get; set; }
 
@@ -36,6 +39,7 @@ public class DashAbility : MonoBehaviour
 
     public void Try()
     {
+        // TODO use a timer for the cooldown and duration
         if (!IsDashing
             && _hasAirDashedSinceJump == false
             && !_timeSinceDashStart.HasValue)
@@ -45,7 +49,7 @@ public class DashAbility : MonoBehaviour
             _timeSinceDashStart = 0f;
             _dashTimeAccumulation = 0f;
 
-            _animator.Play(Animator.StringToHash("Dash"));
+            onStart.Invoke();
         }
     }
 

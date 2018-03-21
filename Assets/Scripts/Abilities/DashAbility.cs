@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [RequireComponent(typeof(CharacterController2D))]
-[RequireComponent(typeof(Animator))]
 public class DashAbility : MonoBehaviour
 {
     public float dashDuration = .25f;

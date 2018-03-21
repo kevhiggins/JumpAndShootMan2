@@ -1,0 +1,26 @@
+x - Camera bounding box
+x - Fix jump timing not feeling right with when spamming jump. (No input buffering)
+
+Evaluate 2D Game Kit package
+
+Dog attack functionality
+Double jump
+Dive kick
+
+
+
+
+
+Enemy Movement Types:
+Static
+Patrolling
+Flying enemies
+
+Enemy Activation Types:
+Jump at you
+Shoot at you
+Rush you
+
+
+
+

@@ -3,7 +3,7 @@ using System.Collections;
 using Prime31;
 using System;
 
-
+[RequireComponent(typeof(DashAbility))]
 public class DemoScene : MonoBehaviour
 {
 	// movement config
@@ -14,10 +14,6 @@ public class DemoScene : MonoBehaviour
 	public float groundDamping = 20f; // how fast do we change direction? higher means faster
 	public float inAirDamping = 5f;
 	public float jumpHeight = 3f;
-
-    public float dashDuration = .75f;
-    public float dashSpeed = 15f;
-    public float dashCooldown = 1f;
 
 	[HideInInspector]
 	private float normalizedHorizontalSpeed = 0;
@@ -32,7 +28,8 @@ public class DemoScene : MonoBehaviour
     private float? _dashTimeAccumulation;
     private bool _hasAirDashedSinceJump = false;
     private float? _timeSinceDashStart;
-    
+
+    private DashAbility _dashAbility;
 
     //private bool _wasAirborne = false;
 
@@ -41,8 +38,9 @@ public class DemoScene : MonoBehaviour
 
 	void Awake ()
 	{
-		_animator = GetComponent<Animator> ();
-		_controller = GetComponent<CharacterController2D> ();
+		_animator = GetComponent<Animator>();
+		_controller = GetComponent<CharacterController2D>();
+	    _dashAbility = GetComponent<DashAbility>();
 
 		// listen to some events for illustration purposes
 		_controller.onControllerCollidedEvent += onControllerCollider;
@@ -89,7 +87,6 @@ public class DemoScene : MonoBehaviour
 	    if (_controller.isGrounded)
 	    {
 	        _velocity.y = 0;
-	        _hasAirDashedSinceJump = false;
 	    }
 
 		if (Input.GetAxisRaw ("Horizontal") > 0f) {
@@ -118,49 +115,15 @@ public class DemoScene : MonoBehaviour
 			_velocity.y = Mathf.Sqrt (2f * jumpHeight * -gravity);
 			_animator.Play (Animator.StringToHash ("Jump"));
 		}
-		//
-	    if (_dashTimeAccumulation.HasValue)
-	    {
-	        _dashTimeAccumulation += Time.deltaTime;
-	        if (_dashTimeAccumulation >= dashDuration)
-	        {
-	            _isDashing = false;
-	        }
-	    }
 
-	    if (_timeSinceDashStart.HasValue)
+	    if (Input.GetButtonDown("Dash"))
 	    {
-	        _timeSinceDashStart += Time.deltaTime;
-	        if (_timeSinceDashStart >= dashCooldown)
-	        {
-	            _timeSinceDashStart = null;
-	        }
-	    }
+	        _dashAbility.Try();
+        }
 
-        if (Input.GetButtonDown("Dash") 
-            && _lastFrameWasAirDash == false 
-            && _hasAirDashedSinceJump == false
-            && !_timeSinceDashStart.HasValue)
+	    if (_dashAbility.IsDashing)
 	    {
-	        _lastFrameWasAirDash = true;
-	        _hasAirDashedSinceJump = true;
-	        _isDashing = true;
-	        _timeSinceDashStart = 0f;
-            
-	        _dashTimeAccumulation = 0f;
-
-			_animator.Play (Animator.StringToHash ("Dash"));
-	    }
-	    else
-	    {
-	        _lastFrameWasAirDash = false;
-	    }
-
-	    if (_isDashing)
-	    {
-	        var directionMultiplier = transform.localScale.x > 0 ? 1 : -1;
-            _velocity.x = directionMultiplier * dashSpeed;
-            _velocity.y = 0f;
+	        _velocity = _dashAbility.Velocity;
 	    }
 	    else
 	    {

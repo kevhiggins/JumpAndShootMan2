@@ -186,6 +186,25 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
+--- !u!1 &35602352 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1754607283686068, guid: 3005f09b870df4c4097e158a07fecbde,
+    type: 2}
+  m_PrefabInternal: {fileID: 1887337896}
+--- !u!114 &35602358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 35602352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 846048c95ccb75447b9322046dbd07d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dashDuration: 0.25
+  dashSpeed: 12
+  dashCooldown: 0.5
 --- !u!1 &39465669
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,6 @@
-﻿using System;
-using UnityEngine;
+﻿using Assets.Scripts;
 using Prime31;
+using UnityEngine;
 using UnityEngine.Events;
 
 [RequireComponent(typeof(CharacterController2D))]
@@ -24,30 +24,36 @@ public class DashAbility : MonoBehaviour
         }
     }
 
-    private float? _dashTimeAccumulation;
     private bool _hasAirDashedSinceJump;
-    private float? _timeSinceDashStart;
+    private bool _onCooldown = false;
 
     private CharacterController2D _controller;
-    private Animator _animator;
+    private Timer _timer;
 
     void Awake()
     {
         _controller = GetComponent<CharacterController2D>();
-        _animator = GetComponent<Animator>();
+        _timer = new Timer();
     }
 
     public void Try()
     {
-        // TODO use a timer for the cooldown and duration
         if (!IsDashing
-            && _hasAirDashedSinceJump == false
-            && !_timeSinceDashStart.HasValue)
+            && !_hasAirDashedSinceJump
+            && !_onCooldown)
         {
             IsDashing = true;
             _hasAirDashedSinceJump = true;
-            _timeSinceDashStart = 0f;
-            _dashTimeAccumulation = 0f;
+
+            _timer.Countdown(dashDuration, () =>
+            {
+                IsDashing = false;
+            });
+
+            _timer.Countdown(dashCooldown, () =>
+            {
+                _onCooldown = false;
+            });
 
             onStart.Invoke();
         }
@@ -58,24 +64,6 @@ public class DashAbility : MonoBehaviour
         if (_controller.isGrounded)
         {
             _hasAirDashedSinceJump = false;
-        }
-
-        if (_dashTimeAccumulation.HasValue)
-        {
-            _dashTimeAccumulation += Time.deltaTime;
-            if (_dashTimeAccumulation >= dashDuration)
-            {
-                IsDashing = false;
-            }
-        }
-
-        if (_timeSinceDashStart.HasValue)
-        {
-            _timeSinceDashStart += Time.deltaTime;
-            if (_timeSinceDashStart >= dashCooldown)
-            {
-                _timeSinceDashStart = null;
-            }
         }
     }
 }

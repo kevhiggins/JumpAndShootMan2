@@ -42,6 +42,7 @@ public class DashAbility : MonoBehaviour
             && !_onCooldown)
         {
             IsDashing = true;
+            _onCooldown = true;
             _hasAirDashedSinceJump = true;
 
             _timer.Countdown(dashDuration, () =>

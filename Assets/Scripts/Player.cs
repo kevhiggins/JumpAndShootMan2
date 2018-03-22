@@ -3,10 +3,11 @@ using Assets.Scripts.Abilities;
 using Prime31;
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(DashAbility))]
 [RequireComponent(typeof(HorizontalMoveAbility))]
-public class DemoScene : MonoBehaviour, IUnitVelocity
+public class Player : MonoBehaviour, IUnitVelocity
 {
     // movement config
     public float gravity = -25f;
@@ -14,8 +15,7 @@ public class DemoScene : MonoBehaviour, IUnitVelocity
     public float airBreakSpeed = 3f;	//when airbreak happens, vspeed is reduced to this
     public float jumpHeight = 3f;
 
-    [HideInInspector]
-    private float normalizedHorizontalSpeed = 0;
+    public UnityEvent OnJump = new UnityEvent();
 
     private CharacterController2D _controller;
     private Animator _animator;
@@ -26,12 +26,10 @@ public class DemoScene : MonoBehaviour, IUnitVelocity
     private HorizontalMoveAbility _horizontalMoveAbility;
 
     public float VelocityX { get { return _velocity.x; } }
-
     public float VelocityY { get { return _velocity.y; } }
 
     void Awake()
     {
-        _animator = GetComponent<Animator>();
         _controller = GetComponent<CharacterController2D>();
         _dashAbility = GetComponent<DashAbility>();
         _horizontalMoveAbility = GetComponent<HorizontalMoveAbility>();
@@ -46,7 +44,6 @@ public class DemoScene : MonoBehaviour, IUnitVelocity
             throw new Exception("Airbreak Threshold must be higher than airbreak speed");
         }
     }
-
 
     #region Event Listeners
 
@@ -100,7 +97,7 @@ public class DemoScene : MonoBehaviour, IUnitVelocity
         if (_controller.isGrounded && Input.GetButtonDown("Jump"))
         {
             _velocity.y = Mathf.Sqrt(2f * jumpHeight * -gravity);
-            _animator.Play(Animator.StringToHash("Jump"));
+            OnJump.Invoke();
         }
 
         if (Input.GetButtonDown("Dash"))
@@ -118,8 +115,6 @@ public class DemoScene : MonoBehaviour, IUnitVelocity
             // apply gravity before moving
             _velocity.y += gravity * Time.deltaTime;
         }
-
-
 
         //		 if holding down bump up our movement amount and turn off one way platform detection for a frame.
         //		 this lets us jump down through one way platforms

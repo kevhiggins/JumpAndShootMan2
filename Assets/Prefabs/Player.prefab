@@ -69,13 +69,13 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4810487116103328}
-  - component: {fileID: 114171414052737266}
   - component: {fileID: 114578784797968638}
   - component: {fileID: 61755806286377450}
   - component: {fileID: 50475289440620936}
   - component: {fileID: 95175660960743510}
   - component: {fileID: 114563210010666206}
   - component: {fileID: 114680006669305566}
+  - component: {fileID: 114945436892753080}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -337,24 +337,6 @@ MonoBehaviour:
   weapon: {fileID: 114869579050552770, guid: 8a07a62d6a759c34fa7de257317bb7fe, type: 2}
   bulletSpeed: 15
   bulletDamage: 1
---- !u!114 &114171414052737266
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1754607283686068}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50effa1f968e34abca1c48e9ebeba4f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gravity: -35
-  airBreakThreshold: 2
-  airBreakSpeed: 0
-  jumpHeight: 2.5
-  runSpeed: 6
-  groundDamping: 25
-  inAirDamping: 500
 --- !u!114 &114484297431342712
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -488,6 +470,37 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: Idle
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!114 &114945436892753080
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1754607283686068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9abd530651a0de444a7ff96b5da56083, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gravity: -35
+  airBreakThreshold: 2
+  airBreakSpeed: 0
+  jumpHeight: 2.5
+  OnJump:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 95175660960743510}
+        m_MethodName: Play
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Jump
           m_BoolArgument: 0
         m_CallState: 2
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,

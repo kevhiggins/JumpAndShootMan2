@@ -80,7 +80,11 @@ public class Player : MonoBehaviour, IUnitVelocity
             _velocity.y = 0;
         }
 
-        if (Input.GetAxisRaw("Horizontal") > 0f)
+        if (_dashAbility.IsDashing)
+        {
+            // Do nothing
+        }
+        else if (Input.GetAxisRaw("Horizontal") > 0f)
         {
             _horizontalMoveAbility.TryRight();
         }

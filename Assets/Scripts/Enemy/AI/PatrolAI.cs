@@ -24,7 +24,6 @@ namespace Assets.Scripts.Enemy.AI
 
         private Direction _direction = Direction.Left;
         private Vector3 _velocity;
-        private float _lastDistance;
 
         void Awake()
         {
@@ -65,7 +64,6 @@ namespace Assets.Scripts.Enemy.AI
                     SwitchDirection();
                     _velocity.x = 0;
                 }
-                _lastDistance = result.distance;
             }
 
             _controller.move(_velocity * Time.deltaTime);

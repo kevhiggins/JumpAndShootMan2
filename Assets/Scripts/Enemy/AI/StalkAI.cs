@@ -7,12 +7,6 @@ namespace Assets.Scripts.Enemy.AI
     [RequireComponent(typeof(HorizontalMoveAbility), typeof(CharacterController2D))]
     public class StalkAI : MonoBehaviour, IUnitVelocity
     {
-        enum Direction
-        {
-            Left,
-            Right
-        }
-
         public float VelocityX { get { return _velocity.x; } }
         public float VelocityY { get { return _velocity.y; } }
 
@@ -22,7 +16,6 @@ namespace Assets.Scripts.Enemy.AI
         private HorizontalMoveAbility _horizontalMoveAbility;
         private CharacterController2D _controller;
 
-        private Direction _direction = Direction.Left;
         private Vector3 _velocity;
 
         private Collider2D _platformCollider;

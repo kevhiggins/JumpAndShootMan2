@@ -656,7 +656,7 @@ MonoBehaviour:
     m_Bits: 256
   triggerMask:
     serializedVersion: 2
-    m_Bits: 257
+    m_Bits: 2817
   oneWayPlatformMask:
     serializedVersion: 2
     m_Bits: 0
@@ -1654,7 +1654,7 @@ MonoBehaviour:
     m_Bits: 256
   triggerMask:
     serializedVersion: 2
-    m_Bits: 257
+    m_Bits: 2817
   oneWayPlatformMask:
     serializedVersion: 2
     m_Bits: 0

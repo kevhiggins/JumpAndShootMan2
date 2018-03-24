@@ -11,6 +11,7 @@ namespace Assets.Scripts.Abilities
         public float runSpeed = 8f;
         public float groundDamping = 20f; // how fast do we change direction? higher means faster
         public float inAirDamping = 5f;
+        public float ExternalSpeed { get; set; }
 
         public UnityEvent OnGroundedMove = new UnityEvent();
         public UnityEvent OnGroundedIdle = new UnityEvent();
@@ -22,7 +23,7 @@ namespace Assets.Scripts.Abilities
             get
             {
                 var smoothedMovementFactor = _controller.isGrounded ? groundDamping : inAirDamping; // how fast do we change direction?
-                return Mathf.Lerp(_unitVelocity.VelocityX, _normalizedSpeed * runSpeed, Time.deltaTime * smoothedMovementFactor);
+                return Mathf.Lerp(_unitVelocity.VelocityX, _normalizedSpeed * runSpeed + ExternalSpeed, Time.deltaTime * smoothedMovementFactor);
             }
         }
 
@@ -33,6 +34,7 @@ namespace Assets.Scripts.Abilities
         {
             _controller = GetComponent<CharacterController2D>();
             _unitVelocity = GetComponent<IUnitVelocity>();
+            ExternalSpeed = 0;
         }
 
         public void TryLeft()

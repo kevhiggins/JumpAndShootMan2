@@ -2,9 +2,11 @@
 using Assets.Scripts.Abilities;
 using Prime31;
 using System;
+using Assets.Scripts.Environment;
 using UnityEngine;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(CharacterController2D))]
 [RequireComponent(typeof(DashAbility))]
 [RequireComponent(typeof(HorizontalMoveAbility))]
 public class Player : MonoBehaviour, IUnitVelocity
@@ -25,6 +27,8 @@ public class Player : MonoBehaviour, IUnitVelocity
     private DashAbility _dashAbility;
     private HorizontalMoveAbility _horizontalMoveAbility;
 
+    private Vector3? _platformVelocity;
+
     public float VelocityX { get { return _velocity.x; } }
     public float VelocityY { get { return _velocity.y; } }
 
@@ -35,9 +39,10 @@ public class Player : MonoBehaviour, IUnitVelocity
         _horizontalMoveAbility = GetComponent<HorizontalMoveAbility>();
 
         // listen to some events for illustration purposes
-        _controller.onControllerCollidedEvent += onControllerCollider;
-        _controller.onTriggerEnterEvent += onTriggerEnterEvent;
+        //_controller.onControllerCollidedEvent += onControllerCollider;
+        //_controller.onTriggerEnterEvent += onTriggerEnterEvent;
         _controller.onTriggerExitEvent += onTriggerExitEvent;
+        _controller.onTriggerStayEvent += onTriggerStayEvent;
 
         if (airBreakThreshold <= airBreakSpeed)
         {
@@ -57,16 +62,28 @@ public class Player : MonoBehaviour, IUnitVelocity
         //Debug.Log( "flags: " + _controller.collisionState + ", hit.normal: " + hit.normal );
     }
 
-
-    void onTriggerEnterEvent(Collider2D col)
-    {
-        Debug.Log("onTriggerEnterEvent: " + col.gameObject.name);
-    }
-
-
     void onTriggerExitEvent(Collider2D col)
     {
-        Debug.Log("onTriggerExitEvent: " + col.gameObject.name);
+        var movingPlatform = col.GetComponent<MovingPlatform>();
+        if (movingPlatform == null)
+        {
+            return;
+        }
+
+        _platformVelocity = null;
+        _horizontalMoveAbility.ExternalSpeed = 0;
+    }
+
+    void onTriggerStayEvent(Collider2D col)
+    {
+        var movingPlatform = col.GetComponent<MovingPlatform>();
+        if (movingPlatform == null)
+        {
+            return;
+        }
+
+        _platformVelocity = movingPlatform.Velocity;
+        _horizontalMoveAbility.ExternalSpeed = movingPlatform.Velocity.x;
     }
 
     #endregion
@@ -112,6 +129,7 @@ public class Player : MonoBehaviour, IUnitVelocity
         else
         {
             _velocity.x = _horizontalMoveAbility.Speed;
+
             // apply gravity before moving
             _velocity.y += gravity * Time.deltaTime;
         }
@@ -128,8 +146,6 @@ public class Player : MonoBehaviour, IUnitVelocity
         {
             _velocity.y = airBreakSpeed;
         }
-
-
 
         _controller.move(_velocity * Time.deltaTime);
 

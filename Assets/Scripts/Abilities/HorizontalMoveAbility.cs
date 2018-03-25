@@ -1,17 +1,14 @@
-﻿using Prime31;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 
 namespace Assets.Scripts.Abilities
 {
-    [RequireComponent(typeof(CharacterController2D))]
     [RequireComponent(typeof(IUnitVelocity))]
     public class HorizontalMoveAbility : MonoBehaviour
     {
         public float runSpeed = 8f;
         public float groundDamping = 20f; // how fast do we change direction? higher means faster
         public float inAirDamping = 5f;
-        public float ExternalSpeed { get; set; }
 
         public UnityEvent OnGroundedMove = new UnityEvent();
         public UnityEvent OnGroundedIdle = new UnityEvent();
@@ -22,19 +19,16 @@ namespace Assets.Scripts.Abilities
         {
             get
             {
-                var smoothedMovementFactor = _controller.isGrounded ? groundDamping : inAirDamping; // how fast do we change direction?
-                return Mathf.Lerp(_unitVelocity.VelocityX, _normalizedSpeed * runSpeed + ExternalSpeed, Time.deltaTime * smoothedMovementFactor);
+                var smoothedMovementFactor = _unitVelocity.IsGrounded ? groundDamping : inAirDamping; // how fast do we change direction?
+                return Mathf.Lerp(_unitVelocity.VelocityX, _normalizedSpeed * runSpeed + _unitVelocity.ExternalVelocity.x, Time.deltaTime * smoothedMovementFactor);
             }
         }
 
-        private CharacterController2D _controller;
         private IUnitVelocity _unitVelocity;
 
         void Awake()
         {
-            _controller = GetComponent<CharacterController2D>();
             _unitVelocity = GetComponent<IUnitVelocity>();
-            ExternalSpeed = 0;
         }
 
         public void TryLeft()
@@ -56,7 +50,7 @@ namespace Assets.Scripts.Abilities
         public void TryIdle()
         {
             _normalizedSpeed = 0;
-            if (_controller.isGrounded)
+            if (_unitVelocity.IsGrounded)
             {
                 OnGroundedIdle.Invoke();
             }
@@ -64,7 +58,7 @@ namespace Assets.Scripts.Abilities
 
         private void CheckOnGroundedMove()
         {
-            if (_controller.isGrounded)
+            if (_unitVelocity.IsGrounded)
             {
                 OnGroundedMove.Invoke();
             }

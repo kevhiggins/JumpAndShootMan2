@@ -27,10 +27,18 @@ public class Player : MonoBehaviour, IUnitVelocity
     private DashAbility _dashAbility;
     private HorizontalMoveAbility _horizontalMoveAbility;
 
-    private Vector3? _platformVelocity;
+    private MovingPlatform _movingPlatform;
 
     public float VelocityX { get { return _velocity.x; } }
     public float VelocityY { get { return _velocity.y; } }
+    public Vector3 ExternalVelocity { get
+        {
+            return _movingPlatform != null ? _movingPlatform.Velocity : Vector3.zero;
+        }
+    }
+
+    public bool IsGrounded { get { return _controller.isGrounded || OnMovingPlatform; } }
+    public bool OnMovingPlatform { get { return _movingPlatform != null; } }
 
     void Awake()
     {
@@ -65,13 +73,10 @@ public class Player : MonoBehaviour, IUnitVelocity
     void onTriggerExitEvent(Collider2D col)
     {
         var movingPlatform = col.GetComponent<MovingPlatform>();
-        if (movingPlatform == null)
+        if (movingPlatform != null && movingPlatform.Equals(_movingPlatform))
         {
-            return;
+            _movingPlatform = null;
         }
-
-        _platformVelocity = null;
-        _horizontalMoveAbility.ExternalSpeed = 0;
     }
 
     void onTriggerStayEvent(Collider2D col)
@@ -82,17 +87,27 @@ public class Player : MonoBehaviour, IUnitVelocity
             return;
         }
 
-        _platformVelocity = movingPlatform.Velocity;
-        _horizontalMoveAbility.ExternalSpeed = movingPlatform.Velocity.x;
+        var platformCollider = movingPlatform.GetComponent<BoxCollider2D>();
+        var playerCollider = GetComponent<BoxCollider2D>();
+        var distance2D = playerCollider.Distance(platformCollider);
+
+        if (distance2D.normal == Vector2.down)
+        {
+            _movingPlatform = movingPlatform;
+        }
+        else if (_movingPlatform != null &&_movingPlatform.GetInstanceID() == movingPlatform.GetInstanceID())
+        {
+            _movingPlatform = null;
+        }
     }
 
     #endregion
 
 
     // the Update loop contains a very simple example of moving the character around and controlling the animation
-    void Update()
+    void LateUpdate()
     {
-        if (_controller.isGrounded)
+        if (IsGrounded)
         {
             _velocity.y = 0;
         }
@@ -110,12 +125,19 @@ public class Player : MonoBehaviour, IUnitVelocity
             _horizontalMoveAbility.TryIdle();
         }
 
+        //if (OnMovingPlatform)
+        //{
+        //    _velocity.y = ExternalVelocity.y;
+        //}
+
         // we can only jump whilst grounded
-        if (_controller.isGrounded && Input.GetButtonDown("Jump"))
+        if (IsGrounded && Input.GetButtonDown("Jump"))
         {
             _velocity.y = Mathf.Sqrt(2f * jumpHeight * -gravity);
             OnJump.Invoke();
         }
+
+
 
         if (Input.GetButtonDown("Dash"))
         {
@@ -131,26 +153,69 @@ public class Player : MonoBehaviour, IUnitVelocity
             _velocity.x = _horizontalMoveAbility.Speed;
 
             // apply gravity before moving
-            _velocity.y += gravity * Time.deltaTime;
+            if (!OnMovingPlatform)
+            {
+                _velocity.y += gravity * Time.deltaTime;
+            }
         }
 
         //		 if holding down bump up our movement amount and turn off one way platform detection for a frame.
         //		 this lets us jump down through one way platforms
-        if (_controller.isGrounded && Input.GetKey(KeyCode.DownArrow))
-        {
-            _velocity.y *= 3f;
-            _controller.ignoreOneWayPlatformsThisFrame = true;
-        }
+        //if (IsGrounded && Input.GetKey(KeyCode.DownArrow))
+        //{
+        //    _velocity.y *= 3f;
+        //    _controller.ignoreOneWayPlatformsThisFrame = true;
+        //}
 
-        if (!Input.GetButton("Jump") && _velocity.y >= airBreakThreshold)
+        if (!IsGrounded && !Input.GetButton("Jump") && _velocity.y >= airBreakThreshold)
         {
             _velocity.y = airBreakSpeed;
         }
 
+        //if (OnMovingPlatform)
+        //{
+        //    // TODO get difference between colliders, and push player above, and then push to ground.
+        //    var platformCollider = _movingPlatform.GetComponent<BoxCollider2D>();
+        //    var playerCollider = GetComponent<BoxCollider2D>();
+        //    var distance2D = platformCollider.Distance(playerCollider);
+
+        //    //if (playerCollider.bounds.Intersects(platformCollider.bounds))
+        //    //{
+        //    //if (distance2D.normal == Vector2.down)
+        //    //{
+        //        transform.position = new Vector3(transform.position.x, transform.position.y + distance2D.distance, transform.position.z);
+        //        _controller.warpToGrounded();
+        //    //}
+
+        //    //}           
+        //}
+
+        if (OnMovingPlatform)
+        {
+            // TODO get difference between colliders, and push player above, and then push to ground.
+            var platformCollider = _movingPlatform.GetComponent<BoxCollider2D>();
+            var playerCollider = GetComponent<BoxCollider2D>();
+            var distance2D = playerCollider.Distance(platformCollider);
+            var hasIntersection = playerCollider.bounds.Intersects(platformCollider.bounds);
+
+            if (distance2D.normal == Vector2.down && hasIntersection)
+            {
+                transform.position = new Vector3(transform.position.x, transform.position.y - distance2D.distance, transform.position.z);
+                _controller.warpToGrounded();
+            }
+        }
+
+        //if (_platformVelocity.HasValue)
+        //{
+        //    _velocity.y = ExternalVelocity.y;
+        //    //_velocity.y += gravity * Time.deltaTime;
+        //}
         _controller.move(_velocity * Time.deltaTime);
 
         // grab our current _velocity to use as a base for all calculations
         _velocity = _controller.velocity;
+
+
     }
 
 }

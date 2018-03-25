@@ -1,9 +1,8 @@
 ﻿using Assets.Scripts;
-using Prime31;
 using UnityEngine;
 using UnityEngine.Events;
 
-[RequireComponent(typeof(CharacterController2D))]
+[RequireComponent(typeof(IUnitVelocity))]
 public class DashAbility : MonoBehaviour
 {
     public float dashDuration = .25f;
@@ -26,12 +25,12 @@ public class DashAbility : MonoBehaviour
     private bool _hasAirDashedSinceJump;
     private bool _onCooldown = false;
 
-    private CharacterController2D _controller;
+    private IUnitVelocity _unitVelocity;
     private Timer _timer;
 
     void Awake()
     {
-        _controller = GetComponent<CharacterController2D>();
+        _unitVelocity = GetComponent<IUnitVelocity>();
         _timer = new Timer();
     }
 
@@ -61,7 +60,7 @@ public class DashAbility : MonoBehaviour
 
     void LateUpdate()
     {
-        if (_controller.isGrounded)
+        if (_unitVelocity.IsGrounded)
         {
             _hasAirDashedSinceJump = false;
         }

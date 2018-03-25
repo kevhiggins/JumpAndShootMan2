@@ -9,6 +9,8 @@ namespace Assets.Scripts.Enemy.AI
     {
         public float VelocityX { get { return _velocity.x; } }
         public float VelocityY { get { return _velocity.y; } }
+        public Vector3 ExternalVelocity { get; private set; }
+        public bool IsGrounded { get; private set; }
 
         public float gravity = -25f;
         public LayerMask searchTargetLayers;

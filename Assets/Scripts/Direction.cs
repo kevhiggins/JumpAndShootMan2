@@ -1,8 +1,14 @@
 ﻿namespace Assets.Scripts
 {
-    public enum Direction
+    public enum HorizontalDirection
     {
         Left,
         Right
+    }
+
+    public enum VerticalDirection
+    {
+        Up,
+        Down
     }
 }

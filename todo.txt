@@ -1,3 +1,12 @@
+Platform bug - Lerp causes issues where player will move when it switched directions
+Only do platform physics when on TOP of the platform
+
+flying enemy patterns
+moving platforms
+environmental enemies
+Dash hurting bad guys + knockback
+
+
 x - Camera bounding box
 x - Fix jump timing not feeling right with when spamming jump. (No input buffering)
 

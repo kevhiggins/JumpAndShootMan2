@@ -48,9 +48,9 @@ public class Player : MonoBehaviour, IUnitVelocity
 
         // listen to some events for illustration purposes
         //_controller.onControllerCollidedEvent += onControllerCollider;
-        //_controller.onTriggerEnterEvent += onTriggerEnterEvent;
+        _controller.onTriggerEnterEvent += onTriggerEnterEvent;
         _controller.onTriggerExitEvent += onTriggerExitEvent;
-        _controller.onTriggerStayEvent += onTriggerStayEvent;
+        //_controller.onTriggerStayEvent += onTriggerStayEvent;
 
         if (airBreakThreshold <= airBreakSpeed)
         {
@@ -72,14 +72,14 @@ public class Player : MonoBehaviour, IUnitVelocity
 
     void onTriggerExitEvent(Collider2D col)
     {
-        var movingPlatform = col.GetComponent<MovingPlatform>();
-        if (movingPlatform != null && movingPlatform.Equals(_movingPlatform))
-        {
-            _movingPlatform = null;
-        }
+        //var movingPlatform = col.GetComponent<MovingPlatform>();
+        //if (movingPlatform != null && movingPlatform.Equals(_movingPlatform))
+        //{
+        //    _movingPlatform = null;
+        //}
     }
 
-    void onTriggerStayEvent(Collider2D col)
+    void onTriggerEnterEvent(Collider2D col)
     {
         var movingPlatform = col.GetComponent<MovingPlatform>();
         if (movingPlatform == null)
@@ -87,19 +87,41 @@ public class Player : MonoBehaviour, IUnitVelocity
             return;
         }
 
-        var platformCollider = movingPlatform.GetComponent<BoxCollider2D>();
-        var playerCollider = GetComponent<BoxCollider2D>();
-        var distance2D = playerCollider.Distance(platformCollider);
+        //var platformCollider = movingPlatform.GetComponent<BoxCollider2D>();
+        //var playerCollider = GetComponent<BoxCollider2D>();
+        //var distance2D = playerCollider.Distance(platformCollider);
 
-        if (distance2D.normal == Vector2.down)
+        if (_controller.collisionState.below)
         {
             _movingPlatform = movingPlatform;
         }
-        else if (_movingPlatform != null &&_movingPlatform.GetInstanceID() == movingPlatform.GetInstanceID())
-        {
-            _movingPlatform = null;
-        }
+        //else if (_movingPlatform != null && _movingPlatform.GetInstanceID() == movingPlatform.GetInstanceID())
+        //{
+        //    _movingPlatform = null;
+        //}
     }
+
+    //void onTriggerStayEvent(Collider2D col)
+    //{
+    //    var movingPlatform = col.GetComponent<MovingPlatform>();
+    //    if (movingPlatform == null)
+    //    {
+    //        return;
+    //    }
+
+    //    var platformCollider = movingPlatform.GetComponent<BoxCollider2D>();
+    //    var playerCollider = GetComponent<BoxCollider2D>();
+    //    var distance2D = playerCollider.Distance(platformCollider);
+
+    //    if (distance2D.normal == Vector2.down)
+    //    {
+    //        _movingPlatform = movingPlatform;
+    //    }
+    //    else if (_movingPlatform != null &&_movingPlatform.GetInstanceID() == movingPlatform.GetInstanceID())
+    //    {
+    //        _movingPlatform = null;
+    //    }
+    //}
 
     #endregion
 
@@ -125,11 +147,6 @@ public class Player : MonoBehaviour, IUnitVelocity
             _horizontalMoveAbility.TryIdle();
         }
 
-        //if (OnMovingPlatform)
-        //{
-        //    _velocity.y = ExternalVelocity.y;
-        //}
-
         // we can only jump whilst grounded
         if (IsGrounded && Input.GetButtonDown("Jump"))
         {
@@ -137,7 +154,23 @@ public class Player : MonoBehaviour, IUnitVelocity
             OnJump.Invoke();
         }
 
+        if (OnMovingPlatform)
+        {
+            var platformCollider = _movingPlatform.GetComponent<BoxCollider2D>();
+            var playerCollider = GetComponent<BoxCollider2D>();
 
+            var platformLeft = platformCollider.bounds.min;
+            var platformRight = platformCollider.bounds.max;
+
+            var playerLeft = playerCollider.bounds.min;
+            var playerRight = playerCollider.bounds.max;
+
+            if (playerRight.x <= platformLeft.x || playerLeft.x >= platformRight.x || Input.GetButtonDown("Jump"))
+            {
+                _movingPlatform = null;
+                _velocity.y += ExternalVelocity.y;
+            }
+        }
 
         if (Input.GetButtonDown("Dash"))
         {
@@ -172,50 +205,18 @@ public class Player : MonoBehaviour, IUnitVelocity
             _velocity.y = airBreakSpeed;
         }
 
-        //if (OnMovingPlatform)
-        //{
-        //    // TODO get difference between colliders, and push player above, and then push to ground.
-        //    var platformCollider = _movingPlatform.GetComponent<BoxCollider2D>();
-        //    var playerCollider = GetComponent<BoxCollider2D>();
-        //    var distance2D = platformCollider.Distance(playerCollider);
-
-        //    //if (playerCollider.bounds.Intersects(platformCollider.bounds))
-        //    //{
-        //    //if (distance2D.normal == Vector2.down)
-        //    //{
-        //        transform.position = new Vector3(transform.position.x, transform.position.y + distance2D.distance, transform.position.z);
-        //        _controller.warpToGrounded();
-        //    //}
-
-        //    //}           
-        //}
-
         if (OnMovingPlatform)
         {
-            // TODO get difference between colliders, and push player above, and then push to ground.
             var platformCollider = _movingPlatform.GetComponent<BoxCollider2D>();
             var playerCollider = GetComponent<BoxCollider2D>();
             var distance2D = playerCollider.Distance(platformCollider);
-            var hasIntersection = playerCollider.bounds.Intersects(platformCollider.bounds);
-
-            if (distance2D.normal == Vector2.down && hasIntersection)
-            {
-                transform.position = new Vector3(transform.position.x, transform.position.y - distance2D.distance, transform.position.z);
-                _controller.warpToGrounded();
-            }
+            transform.position = new Vector3(transform.position.x, transform.position.y - distance2D.distance, transform.position.z);
         }
 
-        //if (_platformVelocity.HasValue)
-        //{
-        //    _velocity.y = ExternalVelocity.y;
-        //    //_velocity.y += gravity * Time.deltaTime;
-        //}
         _controller.move(_velocity * Time.deltaTime);
 
         // grab our current _velocity to use as a base for all calculations
         _velocity = _controller.velocity;
-
-
     }
 
 }

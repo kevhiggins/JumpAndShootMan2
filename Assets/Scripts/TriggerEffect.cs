@@ -14,7 +14,7 @@ public Transform origin;
 		if (trigger.gameObject.tag == "Player")
 		{
 		Debug.Log("effect trigger");
-		ParticleSystem effect = Instantiate(ps,origin.position,ps.transform.rotation);
+		//ParticleSystem effect = Instantiate(ps,origin.position,ps.transform.rotation);
 		}
 	}
 

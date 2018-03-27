@@ -4,17 +4,13 @@ using UnityEngine;
 
 public class ParticleDirection : MonoBehaviour {
 
-private Transform parentTransform;
+public Transform playerTransform;
 
-	// Use this for initialization
-	void Start () {
-		parentTransform = transform.parent;
-	}
-	
+
 	// Update is called once per frame
 	void Update () {
 
-		var facing = parentTransform.localScale.x;
+		var facing = playerTransform.localScale.x;
 		transform.localScale = new Vector3(facing, transform.localScale.y, transform.localScale.z);
 	}
 }

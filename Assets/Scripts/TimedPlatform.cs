@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Prime31;
 
 public class TimedPlatform : MonoBehaviour {
 
@@ -55,12 +56,20 @@ private Color startingColor;
 		
 	}
 
-	void OnTriggerEnter2D (Collider2D trigger)
+	void OnTriggerStay2D (Collider2D trigger)
 	{
-		if (trigger.gameObject.tag == "Player")
-		{
-			//Debug.Log("player touched block");
-			ticking = true;
+
+		Debug.Log("trigger");
+		if (trigger.gameObject.tag == "Player" && ticking == false) {
+
+			Debug.Log("player trigger");
+			if (trigger.gameObject.GetComponent<CharacterController2D>().isGrounded) 
+			{
+				Debug.Log("grounded");
+				ticking = true;
+			}
+
+
 		}
 	}
 

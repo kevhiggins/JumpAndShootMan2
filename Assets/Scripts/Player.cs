@@ -32,6 +32,8 @@ public class Player : MonoBehaviour, IUnitVelocity
     public float VelocityX { get { return _velocity.x; } }
     public float VelocityY { get { return _velocity.y; } }
 
+    private Rigidbody2D rb;
+
     void Awake()
     {
         _controller = GetComponent<CharacterController2D>();
@@ -48,6 +50,9 @@ public class Player : MonoBehaviour, IUnitVelocity
         {
             throw new Exception("Airbreak Threshold must be higher than airbreak speed");
         }
+
+        rb = GetComponent<Rigidbody2D>();
+        rb.sleepMode = RigidbodySleepMode2D.NeverSleep;
     }
 
     #region Event Listeners

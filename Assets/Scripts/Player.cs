@@ -1,8 +1,9 @@
 ﻿using Assets.Scripts;
 using Assets.Scripts.Abilities;
+using Assets.Scripts.Environment;
 using Prime31;
 using System;
-using Assets.Scripts.Environment;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -28,12 +29,16 @@ public class Player : MonoBehaviour, IUnitVelocity
     private HorizontalMoveAbility _horizontalMoveAbility;
 
     private MovingPlatform _movingPlatform;
+    private MovingPlatform _horizontalMovingPlatform;
+    private HitDirectionResolver _hitDirectionResolver;
 
     public float VelocityX { get { return _velocity.x; } }
     public float VelocityY { get { return _velocity.y; } }
-    public Vector3 ExternalVelocity { get
+    public Vector3 ExternalVelocity
+    {
+        get
         {
-            return _movingPlatform != null ? _movingPlatform.Velocity : Vector3.zero;
+            return _horizontalMovingPlatform != null || _movingPlatform != null ? _horizontalMovingPlatform.Velocity : Vector3.zero;
         }
     }
 
@@ -48,9 +53,10 @@ public class Player : MonoBehaviour, IUnitVelocity
 
         // listen to some events for illustration purposes
         //_controller.onControllerCollidedEvent += onControllerCollider;
-        _controller.onTriggerEnterEvent += onTriggerEnterEvent;
-        _controller.onTriggerExitEvent += onTriggerExitEvent;
-        //_controller.onTriggerStayEvent += onTriggerStayEvent;
+        //_controller.onTriggerEnterEvent += onTriggerEnterEvent;
+        //_controller.onTriggerExitEvent += onTriggerExitEvent;
+        _controller.onTriggerStayEvent += onTriggerStayEvent;
+        _hitDirectionResolver = new HitDirectionResolver();
 
         if (airBreakThreshold <= airBreakSpeed)
         {
@@ -70,16 +76,7 @@ public class Player : MonoBehaviour, IUnitVelocity
         //Debug.Log( "flags: " + _controller.collisionState + ", hit.normal: " + hit.normal );
     }
 
-    void onTriggerExitEvent(Collider2D col)
-    {
-        //var movingPlatform = col.GetComponent<MovingPlatform>();
-        //if (movingPlatform != null && movingPlatform.Equals(_movingPlatform))
-        //{
-        //    _movingPlatform = null;
-        //}
-    }
-
-    void onTriggerEnterEvent(Collider2D col)
+    void onTriggerStayEvent(Collider2D col)
     {
         var movingPlatform = col.GetComponent<MovingPlatform>();
         if (movingPlatform == null)
@@ -87,13 +84,33 @@ public class Player : MonoBehaviour, IUnitVelocity
             return;
         }
 
+        var direction = _hitDirectionResolver.FindDirection(gameObject, col, _controller.platformMask);
+        var validHorizontal = new List<HitDirection>()
+        {
+            HitDirection.Left,
+            HitDirection.Right,
+            HitDirection.Top
+        };
+
+
         //var platformCollider = movingPlatform.GetComponent<BoxCollider2D>();
         //var playerCollider = GetComponent<BoxCollider2D>();
         //var distance2D = playerCollider.Distance(platformCollider);
 
-        if (_controller.collisionState.below)
+
+        // TODO left/right should only trigger if the direction of movement is towards the player
+
+
+        if (_movingPlatform == null && direction == HitDirection.Top)
         {
             _movingPlatform = movingPlatform;
+            _movingPlatform.SetCollision(false);
+        }
+
+        if (_horizontalMovingPlatform == null && validHorizontal.Contains(direction))
+        {
+            _horizontalMovingPlatform = movingPlatform;
+            _horizontalMovingPlatform.SetCollision(false);
         }
         //else if (_movingPlatform != null && _movingPlatform.GetInstanceID() == movingPlatform.GetInstanceID())
         //{
@@ -129,6 +146,12 @@ public class Player : MonoBehaviour, IUnitVelocity
     // the Update loop contains a very simple example of moving the character around and controlling the animation
     void LateUpdate()
     {
+        //if (_horizontalMovingPlatform != null)
+        //{
+        //    _horizontalMovingPlatform.SetCollision(false);
+        //}
+
+
         if (IsGrounded)
         {
             _velocity.y = 0;
@@ -154,9 +177,9 @@ public class Player : MonoBehaviour, IUnitVelocity
             OnJump.Invoke();
         }
 
-        if (OnMovingPlatform)
+        if (_horizontalMovingPlatform != null)
         {
-            var platformCollider = _movingPlatform.GetComponent<BoxCollider2D>();
+            var platformCollider = _horizontalMovingPlatform.GetComponent<BoxCollider2D>();
             var playerCollider = GetComponent<BoxCollider2D>();
 
             var platformLeft = platformCollider.bounds.min;
@@ -167,10 +190,23 @@ public class Player : MonoBehaviour, IUnitVelocity
 
             if (playerRight.x <= platformLeft.x || playerLeft.x >= platformRight.x || Input.GetButtonDown("Jump"))
             {
+                _horizontalMovingPlatform.SetCollision(true);
                 _movingPlatform = null;
-                _velocity.y += ExternalVelocity.y;
+                _horizontalMovingPlatform = null;
+                //_velocity.y += ExternalVelocity.y;
             }
         }
+
+        //if (OnMovingPlatform)
+        //{
+        //    var platformCollider = _movingPlatform.GetComponent<BoxCollider2D>();
+        //    var playerCollider = GetComponent<BoxCollider2D>();
+        //    var distance2D = playerCollider.Distance(platformCollider);
+        //    transform.position = new Vector3(transform.position.x, transform.position.y - distance2D.distance,
+        //        transform.position.z);
+        //    _velocity.y = ExternalVelocity.y;
+        //    //_controller.warpToGrounded();
+        //}
 
         if (Input.GetButtonDown("Dash"))
         {
@@ -192,6 +228,20 @@ public class Player : MonoBehaviour, IUnitVelocity
             }
         }
 
+        if (OnMovingPlatform)
+        {
+            //var platformCollider = _movingPlatform.GetComponent<BoxCollider2D>();
+            //var playerCollider = GetComponent<BoxCollider2D>();
+            //var distance2D = playerCollider.Distance(platformCollider);
+            //var distance = playerCollider.bounds.min.y - platformCollider.bounds.max.y;
+
+            transform.position = new Vector3(transform.position.x, transform.position.y + ExternalVelocity.y * Time.deltaTime, transform.position.z);
+
+            //_velocity.y = ExternalVelocity.y;
+            //_controller.warpToGrounded();
+        }
+
+
         //		 if holding down bump up our movement amount and turn off one way platform detection for a frame.
         //		 this lets us jump down through one way platforms
         //if (IsGrounded && Input.GetKey(KeyCode.DownArrow))
@@ -200,23 +250,20 @@ public class Player : MonoBehaviour, IUnitVelocity
         //    _controller.ignoreOneWayPlatformsThisFrame = true;
         //}
 
-        if (!IsGrounded && !Input.GetButton("Jump") && _velocity.y >= airBreakThreshold)
-        {
-            _velocity.y = airBreakSpeed;
-        }
+        //if (!IsGrounded && !Input.GetButton("Jump") && _velocity.y >= airBreakThreshold)
+        //{
+        //    _velocity.y = airBreakSpeed;
+        //}
 
-        if (OnMovingPlatform)
-        {
-            var platformCollider = _movingPlatform.GetComponent<BoxCollider2D>();
-            var playerCollider = GetComponent<BoxCollider2D>();
-            var distance2D = playerCollider.Distance(platformCollider);
-            transform.position = new Vector3(transform.position.x, transform.position.y - distance2D.distance, transform.position.z);
-        }
+
 
         _controller.move(_velocity * Time.deltaTime);
 
+
+
         // grab our current _velocity to use as a base for all calculations
         _velocity = _controller.velocity;
+        _hitDirectionResolver.SavePosition(transform.position);
     }
 
 }

@@ -15,7 +15,8 @@ namespace Assets.Scripts.Environment
         public float xSpeed = 0f;
         public float ySpeed = 0f;
 
-        public Vector3 Velocity {
+        public Vector3 Velocity
+        {
             get { return _velocity; }
         }
 
@@ -41,6 +42,11 @@ namespace Assets.Scripts.Environment
             _velocity.y = VerticalSpeed();
 
             transform.position += _velocity * Time.deltaTime;
+        }
+
+        public void SetCollision(bool enabled)
+        {
+            gameObject.layer = enabled ? 8 : 0;
         }
 
         private void CheckHorizontalDirection()

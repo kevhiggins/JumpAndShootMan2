@@ -3,7 +3,6 @@ using Assets.Scripts.Abilities;
 using Assets.Scripts.Environment;
 using Prime31;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -85,12 +84,7 @@ public class Player : MonoBehaviour, IUnitVelocity
         }
 
         var direction = _hitDirectionResolver.FindDirection(gameObject, col, _controller.platformMask);
-        var validHorizontal = new List<HitDirection>()
-        {
-            HitDirection.Left,
-            HitDirection.Right,
-            HitDirection.Top
-        };
+
 
 
         //var platformCollider = movingPlatform.GetComponent<BoxCollider2D>();
@@ -98,19 +92,23 @@ public class Player : MonoBehaviour, IUnitVelocity
         //var distance2D = playerCollider.Distance(platformCollider);
 
 
-        // TODO left/right should only trigger if the direction of movement is towards the player
-
-
         if (_movingPlatform == null && direction == HitDirection.Top)
         {
             _movingPlatform = movingPlatform;
-            _movingPlatform.SetCollision(false);
+            _controller.warpToGrounded();
+
+            //_movingPlatform.SetCollision(false);
         }
 
-        if (_horizontalMovingPlatform == null && validHorizontal.Contains(direction))
+        if (_horizontalMovingPlatform == null &&
+            (
+                (direction == HitDirection.Left && movingPlatform.HorizontalDirection == HorizontalDirection.Left)
+             || (direction == HitDirection.Right && movingPlatform.HorizontalDirection == HorizontalDirection.Right)
+             || direction == HitDirection.Top
+             ))
         {
             _horizontalMovingPlatform = movingPlatform;
-            _horizontalMovingPlatform.SetCollision(false);
+            //movingPlatform.SetCollision(false);
         }
         //else if (_movingPlatform != null && _movingPlatform.GetInstanceID() == movingPlatform.GetInstanceID())
         //{
@@ -142,6 +140,8 @@ public class Player : MonoBehaviour, IUnitVelocity
 
     #endregion
 
+    // TODO fix being able to run into moving platforms to pass through
+    // TODO fix dash animation on moving platforms
 
     // the Update loop contains a very simple example of moving the character around and controlling the animation
     void LateUpdate()
@@ -190,10 +190,11 @@ public class Player : MonoBehaviour, IUnitVelocity
 
             if (playerRight.x <= platformLeft.x || playerLeft.x >= platformRight.x || Input.GetButtonDown("Jump"))
             {
-                _horizontalMovingPlatform.SetCollision(true);
+                //_horizontalMovingPlatform.SetCollision(true);
                 _movingPlatform = null;
                 _horizontalMovingPlatform = null;
                 //_velocity.y += ExternalVelocity.y;
+                _velocity += ExternalVelocity;
             }
         }
 

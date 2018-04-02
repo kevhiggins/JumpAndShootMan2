@@ -12,6 +12,8 @@ namespace Assets.Scripts.Environment
         public HorizontalDirection initialXDirection = HorizontalDirection.Left;
         public VerticalDirection initialYDirection = VerticalDirection.Up;
 
+        public HorizontalDirection HorizontalDirection { get; private set; }
+
         public float xSpeed = 0f;
         public float ySpeed = 0f;
 
@@ -20,7 +22,6 @@ namespace Assets.Scripts.Environment
             get { return _velocity; }
         }
 
-        private HorizontalDirection _currentXDirection;
         private VerticalDirection _currentYDirection;
 
         private Vector3 _initialPosition;
@@ -29,7 +30,7 @@ namespace Assets.Scripts.Environment
         void Awake()
         {
             _initialPosition = transform.position;
-            _currentXDirection = initialXDirection;
+            HorizontalDirection = initialXDirection;
             _currentYDirection = initialYDirection;
         }
 
@@ -53,11 +54,11 @@ namespace Assets.Scripts.Environment
         {
             if (transform.position.x <= _initialPosition.x + leftBound)
             {
-                _currentXDirection = HorizontalDirection.Right;
+                HorizontalDirection = HorizontalDirection.Right;
             }
             else if (transform.position.x >= _initialPosition.x + rightBound)
             {
-                _currentXDirection = HorizontalDirection.Left;
+                HorizontalDirection = HorizontalDirection.Left;
             }
         }
 
@@ -75,7 +76,7 @@ namespace Assets.Scripts.Environment
 
         private float HorizontalSpeed()
         {
-            var directionMultiplier = _currentXDirection == HorizontalDirection.Left ? -1 : 1;
+            var directionMultiplier = HorizontalDirection == HorizontalDirection.Left ? -1 : 1;
             return xSpeed * directionMultiplier;
         }
 

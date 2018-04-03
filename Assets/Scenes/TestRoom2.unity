@@ -122,7 +122,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4898436619354732, guid: 3b8ab1ed12f3b614d992c2c956936541, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 25.34
+      value: 15.45
       objectReference: {fileID: 0}
     - target: {fileID: 4898436619354732, guid: 3b8ab1ed12f3b614d992c2c956936541, type: 2}
       propertyPath: m_LocalPosition.y
@@ -1168,7 +1168,7 @@ Prefab:
     - target: {fileID: 114237027726909886, guid: 3b8ab1ed12f3b614d992c2c956936541,
         type: 2}
       propertyPath: fireRate
-      value: 0.7
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 114237027726909886, guid: 3b8ab1ed12f3b614d992c2c956936541,
         type: 2}
@@ -1184,6 +1184,11 @@ Prefab:
         type: 2}
       propertyPath: sprayAngle
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114237027726909886, guid: 3b8ab1ed12f3b614d992c2c956936541,
+        type: 2}
+      propertyPath: cooldownBetweenVolley
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3b8ab1ed12f3b614d992c2c956936541, type: 2}

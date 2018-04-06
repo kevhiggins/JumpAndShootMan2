@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Collider2D))]
 public class EnemyHealth : MonoBehaviour {
 
 public int health = 1;
 public float deathLingerTime = 1f;
 private Animator anim;
+
+
 
 
 	// Use this for initialization
@@ -32,7 +35,7 @@ private Animator anim;
 
 		if (anim != null) 
 		{
-			anim.Play("Hit");
+			anim.SetTrigger("Hit");
 		}
 	}
 

@@ -12,8 +12,8 @@ private Vector3 currentTrajectory;
 
 	// Use this for initialization
 	void Start () {
+		
 		obj = transform.root;
-
 	}
 	
 	// Update is called once per frame
